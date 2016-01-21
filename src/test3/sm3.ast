@@ -1,0 +1,41 @@
+(* ASSIST model for *)
+(* Fighter Combat using Dave Lee's construct for blue missile counting*)
+(* This version includes missile failures *)
+(* The kill rate is for one-on-one and is multiplied for N killers *)
+(* Assume one missile per kill even with N killers *)
+(* Therefore, the kill rate includes one hit and all misses *)
+(* Find miss rate based on ratio of Pmiss:Pk *) 
+(* last edit 8/1/01 *)
+
+
+ (* TEST FOR DUPLICATE STATES *)
+LIST = 3;
+ONEDEATH OFF;   (* enumerate all death states *)
+
+(* equipment list *)
+nblue = 3;            (* blue fighters *)
+nred = 3;             (* red fighters *)
+
+ (* kill rates *)
+k_rate_blue = 0.01;               (* blue kill rate *)
+k_rate_red = 0.005;                (* red kill rate *)
+
+pk = 0.85;                           (* missile kill probability *)
+miss_rate = (1-pk)/pk*k_rate_blue;   (*  missile miss rate *)
+
+SPACE = (n0:0..nblue, n1:0..nblue, red:0..nred);
+START = (0,nblue,nred);
+
+DEATHIF (n0=0) and (n1=0);
+DEATHIF (red = 0);
+
+(* transitions: Blue kill *)
+IF (n1>0) AND (red>0) TRANTO n1=n1-1, n0=n0+1, red=red-1 BY n1*k_rate_blue;
+
+(* transitions: Blue misses *)
+IF (n1>0) AND (red>0) TRANTO n1=n1-1, n0=n0+1 BY n1*miss_rate;
+
+(* transitions: Red kills *)
+
+IF (n1>0) AND (red>0) TRANTO n1=n1-1 BY (n1/(n0+n1))*red*k_rate_red;
+IF (red>0) AND (n0>0) TRANTO n0=n0-1 BY (n0/(n0+n1))*red*k_rate_red;

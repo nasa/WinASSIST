@@ -1,0 +1,40 @@
+manual1od.ast    8/15/01 1:19:11 p.m.                   ASSIST 7.3, NASA LaRC    Page 1
+
+(0001): ONEDEATH OFF;
+(0002): 
+(0003): (*  TRIAD WITH COLD SPARES  *)
+(0004): 
+(0005): N_PROCS = 3;            (* Number of active processors *)
+(0006): N_SPARES = 2;           (* Number of spare processors *)
+(0007): LAMBDA_P = 1E-4;        (* Failure rate of active processors *)
+(0008): LAMBDA_S = 1E-5;        (* Failure rate of spare processors *)
+(0009): DELTA = 3.6E3;          (* Reconfiguration rate *)
+(0010): 
+(0011): SPACE = (NP: 0..N_PROCS,        (* Number of active processors *)
+(0012):          NFP: 0..N_PROCS,       (* Number of failed active processors *)
+(0013):          NS: 0..N_SPARES,       (* Number of spare processors *)
+(0014):          NFS: 0..N_SPARES);     (* Number of failed spare processors *)
+(0015): 
+(0016): START = (N_PROCS, 0, N_SPARES, 0);
+(0017): 
+(0018): DEATHIF 2 * NFP >= NP;
+(0019): 
+(0020): IF NP > NFP TRANTO NFP = NFP+1 BY (NP-NFP)*LAMBDA_P;
+(0021):    (* Active processor failure *)
+(0022): 
+(0023): IF NS > NFS TRANTO NFS = NFS+1 BY NS*LAMBDA_S;
+(0024):    (* Spare processor failure *)
+(0025): 
+(0026): IF (NFP > 0 AND NS > 0) THEN
+(0027):    IF NS > NFS TRANTO (NP, NFP-1, NS-1, NFS) BY (1-(NFS/NS))*NFP*DELTA;
+(0028):       (* Replace failed processor with working spare *)
+(0029): 
+(0030):    IF NFS > 0 TRANTO (NP, NFP, NS-1, NFS-1) BY (NFS/NS)*NFP*DELTA;
+(0031):       (* Replace failed processor with failed spare *)
+(0032): ENDIF;
+
+PARSING TIME = 0.01 sec.
+RULE GENERATION TIME = 0.16 sec.
+NUMBER OF STATES IN MODEL = 18
+NUMBER OF TRANSITIONS IN MODEL = 24
+

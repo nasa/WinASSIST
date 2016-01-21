@@ -1,0 +1,4 @@
+#
+echo $1
+diff $1.alog v7.4/$1.alog
+diff $1.mod v7.4/$1.mod
